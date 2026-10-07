@@ -16,3 +16,7 @@ GitHubプロファイル（`targetter009-Git` リポジトリ）の `README.md` 
 #### README.md 内の画像・動画表示仕様
 ```html
 <img src="assets/scene01.gif" width="768" alt="デモ動画">
+
+---
+
+ポイント: HTMLの <img> タグを用い、width（横幅）のみを指定することで、縦横比（アスペクト比）を全自動維持したまま表示サイズを均一に美しく制御。2. GitHubリポジトリ群の全貌と役割解析リポジトリ名システム構成・役割現在のステータスtargetter009-GitGitHubプロファイル表示用（特殊枠）。Actionsによる動画自動GIF変換パイプライン搭載稼働・整備完了ryubo-styleGeminiとの対話で構築中の本番ポータルサイト・メインシステム最重要プロジェクト（進行中）WebCreation-StruggleWebサイト・ポータル構築におけるレイアウトやコンポーネントの試行錯総合体（原点）過去資産（プロトタイプ）Artificial-Inspiration-v2Pythonオブジェクト指向によるAI生成・プロンプト・インスピレーション試行用エンジン過去資産・機能連携用
