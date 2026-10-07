@@ -5,7 +5,7 @@ on:
     paths:
       - 'documents/*.md'
       - 'scripts/generate_speech.py'
-  workflow_dispatch: # 手動実行ボタンも用意
+  workflow_dispatch:
 
 jobs:
   build-audio:
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 最新の変更をしっかり取得
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,3 +36,4 @@ jobs:
         with:
           commit_message: "Automated: Generate speech audio from scripts (.mp3)"
           file_pattern: 'assets/audio/*.mp3'
+          skip_dirty_check: false
