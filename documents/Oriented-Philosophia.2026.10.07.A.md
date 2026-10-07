@@ -50,3 +50,5 @@
 齢65。沖縄の海風とともに、飲茶坊さとしのコードは、今日も走り続けている！
 
 **（BGM：華やかにフィナーレを迎えてフェードアウト）**
+
+<!-- IMAGE_PROMPT: Majestic Banyan tree in Okinawa with glowing digital network lines, cinematic sunset -->
