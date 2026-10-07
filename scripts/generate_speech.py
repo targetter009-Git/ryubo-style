@@ -75,7 +75,7 @@ def generate_audio_from_script(script_path, output_dir="assets/audio"):
 
 if __name__ == "__main__":
     # 対象の台本ファイルのパス（必要に応じて変更）
-    script_file = "documents/Oriented-Philosophia.md"
+    script_file = "documents/Oriented-Philosophia.2026.10.07.md"
     
     # 実行
     generate_audio_from_script(script_file)
