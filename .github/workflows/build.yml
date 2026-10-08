@@ -4,7 +4,12 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # 手動実行ボタンも有効化する設定
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -13,4 +18,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # (ここ以降にbuilt.pyの実行などの処理が入ります)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run built.py to generate index.html
+        run: python scripts/built.py
+
+      - name: Commit and Push generated index.html
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automated: Project film to index.html via built.py"
+          file_pattern: "index.html"
+          git_action_options: '--no-verify'
+          push_options: '--force-with-lease'
