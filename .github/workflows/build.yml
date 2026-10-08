@@ -1,1 +1,16 @@
-# YAML
+name: Build and Deploy targetter009.com
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # 手動実行ボタンも有効化する設定
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # (ここ以降にbuilt.pyの実行などの処理が入ります)
