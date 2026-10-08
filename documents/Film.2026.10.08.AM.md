@@ -6,8 +6,6 @@ script_type: "Dialogue"
 ---
 
 # 飲茶坊さとしの指向哲学（Oriented-Philosophia）対話録
-
-# 飲茶坊さとしの指向哲学（Oriented-Philosophia）対話録
 **日付:** 2026年10月08日 午前  
 **登場人物:** 飲茶坊さとし（翁・語り手）、Gemini-AI（対話パートナー・映写補助）
 
