@@ -1,6 +1,7 @@
 import os
 import glob
 import re
+import html
 
 def parse_film_markdown(file_path):
     """Film.*.md のYAMLフロントメタデータと本文を解析する"""
@@ -10,7 +11,6 @@ def parse_film_markdown(file_path):
     metadata = {}
     body = content
 
-    # --- で囲まれたYAMLフロントメタデータを抽出
     yaml_match = re.search(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
     if yaml_match:
         yaml_text = yaml_match.group(1)
@@ -23,202 +23,279 @@ def parse_film_markdown(file_path):
 
     filename = os.path.basename(file_path)
     title = metadata.get('title', '無題のフィルム')
-    date = metadata.get('date', 'Unknown Date')
+    date = metadata.get('date', '2026-10-08')
     pattern = metadata.get('pattern', 'A')
     script_type = metadata.get('script_type', 'Dialogue')
 
-    # タイトルや主要部分をカード用プレビューとして整形
+    # カード用プレビュー抽出
     lines = [l.strip() for l in body.split('\n') if l.strip() and not l.startswith('#') and not l.startswith('---')]
-    preview = lines[0][:120] + "..." if lines else "対話ログが含まれています。"
+    preview = lines[0][:100] + "..." if lines else "対話ログが含まれています。"
 
     return {
+        'id': filename.replace('.', '_'),
         'filename': filename,
         'title': title,
         'date': date,
         'pattern': pattern,
         'script_type': script_type,
         'preview': preview,
-        'body': body
+        'body_html': html.escape(body).replace('\n', '<br>')
     }
 
 def generate_html(films):
-    """Film情報からシネマティックな index.html を生成する"""
-    
     cards_html = ""
-    for film in films:
-        # パターンA（濃紺）/ パターンB（深朱）のデザイン分岐演出
-        pattern_class = "pattern-a" if film['pattern'] == 'A' else "pattern-b"
-        badge_label = f"Pattern {film['pattern']} / {film['script_type']}"
+    modals_html = ""
 
+    for film in films:
+        p_class = "pattern-a" if film['pattern'] == 'A' else "pattern-b"
+        p_label = "Pattern A (対話録)" if film['pattern'] == 'A' else "Pattern B (戯曲/ドラマ)"
+
+        # 映写ポスターカード
         cards_html += f"""
-        <article class="film-card {pattern_class}">
-            <div class="card-header">
-                <span class="badge">{badge_label}</span>
-                <time class="date">{film['date']}</time>
+        <div class="poster-card {p_class}">
+            <div class="poster-badge">{p_label}</div>
+            <div class="poster-body">
+                <time class="film-date">FILM DATE: {film['date']}</time>
+                <h2 class="film-title">{film['title']}</h2>
+                <p class="film-excerpt">{film['preview']}</p>
             </div>
-            <h2 class="film-title">{film['title']}</h2>
-            <p class="film-preview">{film['preview']}</p>
-            <div class="card-footer">
-                <span class="file-tag">🎞️ {film['filename']}</span>
+            <div class="poster-action">
+                <button class="play-btn" onclick="openScreen('{film['id']}')">
+                    <span class="icon">🎬</span> フィルムを再生（全編上映）
+                </button>
             </div>
-        </article>
+        </div>
         """
 
-    html_template = f"""<!DOCTYPE html>
+        # スクリーン（全編閲覧用モーダル）
+        modals_html += f"""
+        <div id="modal-{film['id']}" class="screen-overlay" onclick="closeScreen('{film['id']}')">
+            <div class="cinema-screen" onclick="event.stopPropagation()">
+                <div class="screen-header">
+                    <div>
+                        <span class="screen-badge">{p_label}</span>
+                        <span class="screen-filename">🎞️ {film['filename']}</span>
+                    </div>
+                    <button class="close-btn" onclick="closeScreen('{film['id']}')">&times;</button>
+                </div>
+                <div class="screen-content">
+                    <h1>{film['title']}</h1>
+                    <hr class="cinema-hr">
+                    <div class="script-body">{film['body_html']}</div>
+                </div>
+            </div>
+        </div>
+        """
+
+    return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>targetter009 | 指向哲学 (Oriented-Philosophia)</title>
+    <title>targetter009 | 指向哲学 RyuboStyle シアター</title>
     <style>
         :root {{
-            --bg-color: #0b0f19;
-            --text-color: #e2e8f0;
-            --accent-gold: #d97706;
-            --card-bg: #1e293b;
-            --border-color: #334155;
-        }}
-        
-        body {{
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 2rem 1rem;
-            line-height: 1.6;
+            --bg-dark: #07090e;
+            --card-a: linear-gradient(145deg, #0f172a, #1e293b);
+            --card-b: linear-gradient(145deg, #2a0f17, #3b1e29);
+            --gold: #f59e0b;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
         }}
 
+        body {{
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: "Georgia", "YuMincho", "Hiragino Mincho ProN", serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }}
+
+        /* 映写ヘッダー */
         header {{
             text-align: center;
-            max-width: 800px;
-            margin: 0 auto 3rem auto;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 2rem;
+            padding: 4rem 1rem 2rem 1rem;
+            background: radial-gradient(circle at top, #1e293b 0%, var(--bg-dark) 70%);
+            border-bottom: 1px solid #1e293b;
         }}
 
-        h1 {{
-            font-size: 2.2rem;
-            letter-spacing: 0.05em;
-            color: #f8fafc;
+        .projector-light {{
+            display: inline-block;
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 15px var(--gold));
             margin-bottom: 0.5rem;
         }}
 
-        p.subtitle {{
-            color: #94a3b8;
-            font-style: italic;
+        h1.site-title {{
+            font-size: 2.8rem;
+            margin: 0;
+            letter-spacing: 0.1em;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }}
+
+        p.site-sub {{
+            color: var(--gold);
             font-size: 1rem;
+            letter-spacing: 0.2em;
+            margin-top: 0.5rem;
         }}
 
-        .film-grid {{
+        /* ポスターギャラリー */
+        .gallery {{
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
             max-width: 1100px;
-            margin: 0 auto;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
         }}
 
-        .film-card {{
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+        .poster-card {{
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .poster-card.pattern-a {{ background: var(--card-a); border-left: 5px solid #3b82f6; }}
+        .poster-card.pattern-b {{ background: var(--card-b); border-left: 5px solid #ef4444; }}
+
+        .poster-card:hover {{
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.15);
+            border-color: var(--gold);
+        }}
+
+        .poster-badge {{
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            text-transform: uppercase;
+            font-family: sans-serif;
+            margin-bottom: 1rem;
+        }}
+
+        .film-date {{ font-size: 0.8rem; color: var(--text-sub); font-family: sans-serif; }}
+        .film-title {{ font-size: 1.5rem; margin: 0.5rem 0 1rem 0; color: #fff; line-height: 1.3; }}
+        .film-excerpt {{ font-size: 0.95rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 1.5rem; }}
+
+        .play-btn {{
+            width: 100%;
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: sans-serif;
+            font-weight: bold;
+        }}
+
+        .play-btn:hover {{
+            background-color: var(--gold);
+            color: #000;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }}
+
+        /* シネマスクリーン（モーダル） */
+        .screen-overlay {{
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(3, 5, 10, 0.92);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }}
+
+        .cinema-screen {{
+            background: #0d131f;
+            border: 1px solid #334155;
+            width: 100%;
+            max-width: 850px;
+            max-height: 85vh;
             border-radius: 12px;
-            padding: 1.5rem;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }}
 
-        .film-card:hover {{
-            transform: translateY(-4px);
-            border-color: var(--accent-gold);
-        }}
-
-        .film-card.pattern-a {{
-            border-left: 4px solid #3b82f6; /* 青のアクセント */
-        }}
-
-        .film-card.pattern-b {{
-            border-left: 4px solid #ef4444; /* 赤のアクセント */
-        }}
-
-        .card-header {{
+        .screen-header {{
+            padding: 1.2rem 1.8rem;
+            background: #161f30;
+            border-bottom: 1px solid #1e293b;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
+            font-family: sans-serif;
         }}
 
-        .badge {{
-            background-color: #0f172a;
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            color: #cbd5e1;
-            font-weight: 600;
+        .screen-badge {{ background: var(--gold); color: #000; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }}
+        .screen-filename {{ color: var(--text-sub); margin-left: 1rem; font-size: 0.85rem; }}
+        .close-btn {{ background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }}
+
+        .screen-content {{
+            padding: 2.5rem;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 1.05rem;
         }}
 
-        .date {{
-            color: #64748b;
-        }}
+        .cinema-hr {{ border: 0; height: 1px; background: #334155; margin: 1.5rem 0 2rem 0; }}
 
-        .film-title {{
-            font-size: 1.25rem;
-            margin: 0 0 0.8rem 0;
-            color: #f1f5f9;
-        }}
-
-        .film-preview {{
-            color: #94a3b8;
-            font-size: 0.95rem;
-            margin-bottom: 1.2rem;
-        }}
-
-        .card-footer {{
-            font-size: 0.8rem;
-            color: #64748b;
-            border-top: 1px dashed var(--border-color);
-            padding-top: 0.8rem;
-        }}
-
-        footer {{
-            text-align: center;
-            margin-top: 4rem;
-            color: #475569;
-            font-size: 0.85rem;
-        }}
+        footer {{ text-align: center; padding: 3rem; color: #475569; font-family: sans-serif; font-size: 0.85rem; }}
     </style>
 </head>
 <body>
     <header>
-        <h1>targetter009</h1>
-        <p class="subtitle">指向哲学（Oriented-Philosophia）/ RyuboStyle 映写ポータル</p>
+        <div class="projector-light">🎞️</div>
+        <h1 class="site-title">targetter009</h1>
+        <p class="site-sub">ORIENTED-PHILOSOPHIA CINEMA PORTAL</p>
     </header>
 
-    <main class="film-grid">
+    <main class="gallery">
         {cards_html}
     </main>
+
+    {modals_html}
 
     <footer>
         <p>&copy; 2026 RyuboStyle — Projected by built.py</p>
     </footer>
+
+    <script>
+        function openScreen(id) {{
+            document.getElementById('modal-' + id).style.display = 'flex';
+        }}
+        function closeScreen(id) {{
+            document.getElementById('modal-' + id).style.display = 'none';
+        }}
+    </script>
 </body>
 </html>
 """
-    return html_template
 
 def main():
-    # documents/ 内の Film.*.md を検索して処理
     film_files = sorted(glob.glob('documents/Film.*.md'), reverse=True)
-    
-    films = []
-    for f_path in film_files:
-        films.append(parse_film_markdown(f_path))
-
-    # html出力生成
+    films = [parse_film_markdown(f) for f in film_files]
     html_content = generate_html(films)
     
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
-        
-    print(f"Successfully projected {len(films)} film(s) into index.html!")
+    print(f"Successfully projected {len(films)} film(s) into cinema portal!")
 
 if __name__ == '__main__':
     main()
