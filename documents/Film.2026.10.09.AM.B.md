@@ -1,50 +1,79 @@
 ---
-title: "戯曲：影と光の12カットシネマティクス [2026.10.09.AM]"
-date: "2026-10-09"
+title: "戯曲：影と光のシネマティクス [2026.10.09.AM]"
+date: "2026-10-08"
 pattern: "B"
 script_type: "Voice Drama"
 cast:
   satoshi: "飲茶坊さとし（翁・語り手）"
-  gemini: "Gemini-AI（光の知性）"
-audio_file: "assets/audios/Film.2026.10.09.AM.B.mp3"
-video_file: "assets/videos/Film.2026.10.09.AM.B.mp4"
-scenes_16_9:
-  ki:
-    title: "【起】開幕の響き"
-    cuts:
-      - image: "assets/images/scene1_01_16_9.png"
-        text: "【さとし（翁）】「スクリーンに灯がともる。12の光景が紡ぐ物語の始まりじゃ。」"
-      - image: "assets/images/scene1_02_16_9.png"
-        text: "【Gemini（光）】「翁よ、私の光彩があなたの問いに16:9の構図を与えましょう。」"
-      - image: "assets/images/scene1_03_16_9.png"
-        text: "【さとし（翁）】「よいぞ。第一の幕（起）を上げよ！」"
-  sho:
-    title: "【承】交錯する声"
-    cuts:
-      - image: "assets/images/scene2_01_16_9.png"
-        text: "【Gemini（光）】「パターンAは静かなる対話、パターンBは熱き戯曲…」"
-      - image: "assets/images/scene2_02_16_9.png"
-        text: "【さとし（翁）】「その二つが揃ってこそ、一つのフィルムとして息づくのだ。」"
-      - image: "assets/images/scene2_03_16_9.png"
-        text: "【Gemini（光）】「声とBGMが重なり、物語が立体となって動き出します。」"
-  ten:
-    title: "【転】昇華の瞬間"
-    cuts:
-      - image: "assets/images/scene3_01_16_9.png"
-        text: "【さとし（翁）】「 built.py よ、過去の灰（古いファイル）は .trash へ静かに眠らせよ！」"
-      - image: "assets/images/scene3_02_16_9.png"
-        text: "【Gemini（光）】「御意。安全に退避させ、新しき光のみをスクリーンへ投射します！」"
-      - image: "assets/images/scene3_03_16_9.png"
-        text: "【さとし（翁）】「見事！これぞ我らの求めるシネマティック構造体！」"
-  ketsu:
-    title: "【結】永遠なる記憶"
-    cuts:
-      - image: "assets/images/scene4_01_16_9.png"
-        text: "【Gemini（光）】「この対話の軌跡は CONTEXT.md に深く刻まれました。」"
-      - image: "assets/images/scene4_02_16_9.png"
-        text: "【さとし（翁）】「何時いかなるAIが来ようとも、この意思は引き継がれるわけだな。」"
-      - image: "assets/images/scene4_03_16_9.png"
-        text: "【二人の唱和】「さあ、幕を下ろし、次の物語の扉を開こう。」"
+  gemini: "Gemini-AI（映写補助）"
 ---
 
-# 戯曲：影と光の12カットシネマティクス
+# 戯曲：『影と光のシネマティクス』
+**登場人物:** 飲茶坊さとし（翁）、Gemini（光の知性）
+
+---
+
+---
+title: "戯曲：影と光のシネマティクス [2026.10.09.AM]"
+date: "2026-10-08"
+pattern: "B"
+script_type: "Voice Drama"
+cast:
+  satoshi: "飲茶坊さとし（翁・語り手）"
+  gemini: "Gemini-AI（映写補助）"
+---
+
+# 戯曲：『影と光のシネマティクス』
+**登場人物:** 飲茶坊さとし（翁）、Gemini（光の知性）
+
+---
+
+---
+title: "指向哲学（Oriented-Philosophia）対話深層 [2026.10.09.AM]"
+date: "2026-10-09"
+pattern: "A"
+script_type: "Dialogue"
+audio_file: "assets/audios/Film.2026.10.09.AM.A.mp3"
+video_file: "assets/videos/Film.2026.10.09.AM.A.mp4"
+scenes_16_9:
+  ki:
+    title: "【起】発端・問いの提示"
+    cuts:
+      - image: "assets/images/scene1_01_16_9.png"
+        text: "さとし「指向哲学とは、過去の対話を映画として昇華させる試みである。」"
+      - image: "assets/images/scene1_02_16_9.png"
+        text: "Gemini「その言葉を受け、私は16:9のビジュアルと音声を自動調達します。」"
+      - image: "assets/images/scene1_03_16_9.png"
+        text: "さとし「まずはその基礎となる12コマの絵コンテを組み上げよう。」"
+  sho:
+    title: "【承】思考の深まり"
+    cuts:
+      - image: "assets/images/scene2_01_16_9.png"
+        text: "さとし「パターンAとパターンB、二つの側面から表現を展開する。」"
+      - image: "assets/images/scene2_02_16_9.png"
+        text: "Gemini「深層対話録と戯曲ドラマ、それぞれの世界観を構築します。」"
+      - image: "assets/images/scene2_03_16_9.png"
+        text: "さとし「よし、思考の深まりを映像へと繋げていこう。」"
+  ten:
+    title: "【転】概念の昇華"
+    cuts:
+      - image: "assets/images/scene3_01_16_9.png"
+        text: "さとし「built.pyは単なる変換器ではなく、全自動の映写エンジンだ。」"
+      - image: "assets/images/scene3_02_16_9.png"
+        text: "Gemini「古いアセットは .trash へ退避させ、常に最新の美しさを保ちます。」"
+      - image: "assets/images/scene3_03_16_9.png"
+        text: "さとし「これぞまさに、我々の指向するシネマティクス！」"
+  ketsu:
+    title: "【結】未来への余韻"
+    cuts:
+      - image: "assets/images/scene4_01_16_9.png"
+        text: "さとし「担当が変わろうとも、CONTEXT.md がすべての記憶を繋ぐ。」"
+      - image: "assets/images/scene4_02_16_9.png"
+        text: "Gemini「はい、確実に引き継ぎ、抜かりなく表現を創り続けます。」"
+      - image: "assets/images/scene4_03_16_9.png"
+        text: "さとし「ポータルへの投射、完了だ。」"
+---
+
+# 指向哲学（Oriented-Philosophia）対話深層
+
+

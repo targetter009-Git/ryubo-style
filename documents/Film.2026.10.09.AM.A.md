@@ -1,4 +1,26 @@
 ---
+title: "指向哲学（Oriented-Philosophia）対話録 [2026.10.09.AM]"
+date: "2026-10-08"
+pattern: "A"
+script_type: "Dialogue"
+---
+
+---
+title: "戯曲：影と光のシネマティクス [2026.10.09.AM]"
+date: "2026-10-08"
+pattern: "B"
+script_type: "Voice Drama"
+cast:
+  satoshi: "飲茶坊さとし（翁・語り手）"
+  gemini: "Gemini-AI（映写補助）"
+---
+
+# 戯曲：『影と光のシネマティクス』
+**登場人物:** 飲茶坊さとし（翁）、Gemini（光の知性）
+
+---
+
+---
 title: "指向哲学（Oriented-Philosophia）対話深層 [2026.10.09.AM]"
 date: "2026-10-09"
 pattern: "A"
@@ -45,3 +67,5 @@ scenes_16_9:
 ---
 
 # 指向哲学（Oriented-Philosophia）対話深層
+
+
