@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Master Manager Script
         run: |
-          python manager.py
+          python -m python manager.py || python manager.py
 
       - name: Commit all generated assets
         run: |
