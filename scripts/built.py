@@ -8,14 +8,12 @@ def process_readme_to_films():
     README.*.md（または既存の対話原稿）を読み込み、
     パターンA（対話録）とパターンB（戯曲ドラマ）の2つの Film.*.md へ自動昇華・生成する
     """
-    # documents/ またはルートにある原稿ファイルを検索
     source_files = glob.glob('documents/README.20*.md') + glob.glob('documents/Film.20*.md') + glob.glob('README.20*.md')
     
     for src in source_files:
         with open(src, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # 日付やIDの抽出 (例: 2026.10.08.AM)
         date_match = re.search(r'20\d{2}\.\d{2}\.\d{2}\.[AP]M', src)
         film_id = date_match.group(0) if date_match else "2026.10.08.AM"
         
@@ -25,6 +23,7 @@ title: "指向哲学（Oriented-Philosophia）対話録 [{film_id}]"
 date: "2026-10-08"
 pattern: "A"
 script_type: "Dialogue"
+film_id: "{film_id}"
 ---
 
 {content}
@@ -33,7 +32,6 @@ script_type: "Dialogue"
             f.write(film_a_content)
 
         # --- パターンB (戯曲・ボイスドラマフィルム) の自動再構成生成 ---
-        # セリフ演出を強調した戯曲スタイルへ変換
         script_body = content.replace("飲茶坊さとし:", "\n**【さとし（翁）】**\n> ").replace("Gemini:", "\n**【Gemini（光の知性）】**\n> ")
         
         film_b_content = f"""---
@@ -41,6 +39,7 @@ title: "戯曲：影と光のシネマティクス [{film_id}]"
 date: "2026-10-08"
 pattern: "B"
 script_type: "Voice Drama"
+film_id: "{film_id}"
 cast:
   satoshi: "飲茶坊さとし（翁・語り手）"
   gemini: "Gemini-AI（映写補助）"
@@ -57,7 +56,7 @@ cast:
             f.write(film_b_content)
 
 def parse_film_markdown(file_path):
-    """生成された Film.*.md のメタデータと本文を解析"""
+    """生成された Film.*.md のメタデータと本文を解析し、メディアファイルの存在もチェック"""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
@@ -74,7 +73,22 @@ def parse_film_markdown(file_path):
                 metadata[key.strip()] = val.strip().strip('"').strip("'")
 
     filename = os.path.basename(file_path)
-    lines = [l.strip() for l in body.split('\n') if l.strip() and not l.startswith('#') and not l.startswith('---')]
+    
+    # フィルムID（例: 2026.10.09.AM）の特定
+    film_id_match = re.search(r'20\d{2}\.\d{2}\.\d{2}\.[AP]M', filename)
+    film_id = film_id_match.group(0) if film_id_match else "2026.10.08.AM"
+
+    # メディアファイルのパス確認
+    video_path = f"assets/videos/Film.{film_id}.mp4"
+    audio_path = f"assets/audios/Film.{film_id}.mp3"
+    
+    has_video = os.path.exists(video_path)
+    has_audio = os.path.exists(audio_path)
+    
+    # 絵コンテ画像の取得
+    images = sorted(glob.glob('assets/images/*_16_9.png'))
+
+    lines = [l.strip() for l in body.split('\n'] if l.strip() and not l.startswith('#') and not l.startswith('---')]
     preview = lines[0][:90] + "..." if lines else "対話ログが含まれています。"
 
     return {
@@ -85,7 +99,10 @@ def parse_film_markdown(file_path):
         'pattern': metadata.get('pattern', 'A'),
         'script_type': metadata.get('script_type', 'Dialogue'),
         'preview': preview,
-        'body_html': html.escape(body).replace('\n', '<br>')
+        'body_html': html.escape(body).replace('\n', '<br>'),
+        'video_url': video_path if has_video else None,
+        'audio_url': audio_path if has_audio else None,
+        'images': images[:4]  # 上映用に最初の数枚の絵コンテを表示
     }
 
 def generate_html(films):
@@ -112,6 +129,42 @@ def generate_html(films):
         </div>
         """
 
+        # メディアプレイヤー（動画・音声・絵コンテ）のHTML構築
+        media_section = ""
+        if film['video_url']:
+            media_section += f"""
+            <div class="media-container">
+                <p class="media-label">🎥 シネマティック動画</p>
+                <video controls width="100%" style="border-radius: 8px; background: #000;">
+                    <source src="{film['video_url']}" type="video/mp4">
+                    お使いのブラウザは動画タグに対応していません。
+                </video>
+            </div>
+            """
+        elif film['audio_url']:
+            media_section += f"""
+            <div class="media-container">
+                <p class="media-label">🎙️ ボイスドラマ音声</p>
+                <audio controls style="width: 100%;">
+                    <source src="{film['audio_url']}" type="audio/mp3">
+                    お使いのブラウザは音声タグに対応していません。
+                </audio>
+            </div>
+            """
+
+        # 絵コンテギャラリーの構築
+        gallery_section = ""
+        if film['images']:
+            imgs_html = "".join([f'<img src="{img}" alt="Storyboard" style="width: 120px; border-radius: 4px; border: 1px solid #334155;">' for img in film['images']])
+            gallery_section = f"""
+            <div class="storyboard-container">
+                <p class="media-label">🖼️ 生成絵コンテ</p>
+                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+                    {imgs_html}
+                </div>
+            </div>
+            """
+
         modals_html += f"""
         <div id="modal-{film['id']}" class="screen-overlay" onclick="closeScreen('{film['id']}')">
             <div class="cinema-screen" onclick="event.stopPropagation()">
@@ -123,7 +176,12 @@ def generate_html(films):
                     <button class="close-btn" onclick="closeScreen('{film['id']}')">&times;</button>
                 </div>
                 <div class="screen-content">
-                    <div class="script-body">{film['body_html']}</div>
+                    {media_section}
+                    {gallery_section}
+                    <div class="script-section">
+                        <p class="media-label">📜 台本・対話録</p>
+                        <div class="script-body">{film['body_html']}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -159,12 +217,15 @@ def generate_html(films):
         .play-btn {{ width: 100%; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 0.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }}
         .play-btn:hover {{ background: var(--gold); color: #000; }}
         .screen-overlay {{ display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(3, 5, 10, 0.92); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 2rem; box-sizing: border-box; }}
-        .cinema-screen {{ background: #0d131f; border: 1px solid #334155; width: 100%; max-width: 800px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; }}
+        .cinema-screen {{ background: #0d131f; border: 1px solid #334155; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; }}
         .screen-header {{ padding: 1rem 1.5rem; background: #161f30; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-family: sans-serif; }}
         .screen-badge {{ background: var(--gold); color: #000; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }}
         .screen-filename {{ color: var(--text-sub); margin-left: 1rem; font-size: 0.85rem; }}
         .close-btn {{ background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }}
         .screen-content {{ padding: 2rem; overflow-y: auto; line-height: 1.8; font-size: 1rem; }}
+        .media-container, .storyboard-container, .script-section {{ margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #1e293b; }}
+        .media-label {{ font-size: 0.85rem; color: var(--gold); font-family: sans-serif; font-weight: bold; margin-bottom: 0.5rem; text-transform: uppercase; }}
+        .script-body {{ background: #05080f; padding: 1rem; border-radius: 8px; border: 1px solid #1e293b; color: #cbd5e1; font-size: 0.95rem; max-height: 300px; overflow-y: auto; }}
         footer {{ text-align: center; padding: 3rem; color: #475569; font-family: sans-serif; font-size: 0.85rem; }}
     </style>
 </head>
@@ -189,10 +250,8 @@ def generate_html(films):
 """
 
 def main():
-    # 1. 原稿から Film.A と Film.B を分離・自動生成する
     process_readme_to_films()
     
-    # 2. 生成されたすべての Film.*.md を読み込んで映写（HTML化）
     film_files = sorted(glob.glob('documents/Film.*.md'), reverse=True)
     films = [parse_film_markdown(f) for f in film_files]
     html_content = generate_html(films)
