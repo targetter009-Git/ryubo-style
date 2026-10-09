@@ -15,7 +15,6 @@ def generate_images():
             img_name = f"{s}_{c}_16_9.png"
             img_path = os.path.join('assets/images', img_name)
             
-            # 各カットの雰囲気を変える個別プロンプトの構成
             prompt = f"{base_prompt}, scene {s} cut {c}, mysterious shadow and light"
             encoded_prompt = urllib.parse.quote(prompt)
             image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1280&height=720&nologo=true"
