@@ -1,31 +1,36 @@
-name: Auto Generate Images from Scripts
+name: Generate 16:9 Scene Images (12 Cuts)
 
 on:
+  workflow_dispatch:
   push:
     paths:
-      - 'documents/*.md'
-      - 'scripts/generate_images.py'
-  workflow_dispatch:
+      - 'documents/Film.*.md'
 
 jobs:
-  build-images:
+  generate-images:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run Image Generation Script
         run: |
-          python scripts/generate_images.py
+          python generate_images.py
 
-      - name: Commit and Push Generated Images
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Automated: Generate image assets from scripts (.png)"
-          file_pattern: 'assets/images/*.png'
+      - name: Commit generated images
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add assets/images/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate 12-cut 16:9 scene images"
+          git push

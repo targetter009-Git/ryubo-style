@@ -1,13 +1,14 @@
-name: Generate Audio Track
+name: Generate Final Movie (.mp4)
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'documents/Film.*.md'
+      - 'assets/images/**'
+      - 'assets/audios/**'
 
 jobs:
-  generate-audio:
+  generate-movies:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -23,14 +24,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Speech Generation Script
-        run: |
-          python generate_speech.py
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Commit generated audio
+      - name: Run Movie Generation Script
+        run: |
+          python generate_movies.py
+
+      - name: Commit generated movies
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add assets/audios/
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate audio tracks"
+          git add assets/videos/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate 16:9 cinematic movies"
           git push
