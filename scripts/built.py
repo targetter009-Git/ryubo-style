@@ -27,7 +27,6 @@ def parse_film_markdown(file_path):
     pattern = metadata.get('pattern', 'A')
     script_type = metadata.get('script_type', 'Dialogue')
 
-    # カード用プレビュー抽出
     lines = [l.strip() for l in body.split('\n') if l.strip() and not l.startswith('#') and not l.startswith('---')]
     preview = lines[0][:100] + "..." if lines else "対話ログが含まれています。"
 
@@ -67,7 +66,7 @@ def generate_html(films):
         </div>
         """
 
-        # スクリーン（全編閲覧用モーダル）
+        # シネマスクリーン（全編閲覧用モーダル）
         modals_html += f"""
         <div id="modal-{film['id']}" class="screen-overlay" onclick="closeScreen('{film['id']}')">
             <div class="cinema-screen" onclick="event.stopPropagation()">
@@ -112,7 +111,6 @@ def generate_html(films):
             min-height: 100vh;
         }}
 
-        /* 映写ヘッダー */
         header {{
             text-align: center;
             padding: 4rem 1rem 2rem 1rem;
@@ -142,7 +140,6 @@ def generate_html(films):
             margin-top: 0.5rem;
         }}
 
-        /* ポスターギャラリー */
         .gallery {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -207,7 +204,6 @@ def generate_html(films):
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
         }}
 
-        /* シネマスクリーン（モーダル） */
         .screen-overlay {{
             display: none;
             position: fixed;
