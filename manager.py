@@ -15,14 +15,17 @@ def run_step(step_name, func):
         return False
 
 def step_images():
+    # 画像生成処理のインポートと実行
     import generate_images
     generate_images.generate_images()
 
 def step_speech():
+    # 音声合成処理のインポートと実行
     import generate_speech
     generate_speech.generate_speech()
 
 def step_movies():
+    # 動画結合処理のインポートと実行
     import generate_movies
     generate_movies.generate_movies()
 
