@@ -1,0 +1,31 @@
+name: Generate 16:9 Scene Images (12 Cuts)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'documents/Film.*.md'
+
+jobs:
+  generate-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Image Generation Script
+        run: |
+          python generate_images.py
+
+      - name: Commit generated images
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add assets/images/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate 12-cut 16:9 scene images"
+          git push
