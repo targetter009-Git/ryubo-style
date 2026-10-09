@@ -1,35 +1,38 @@
-name: Build and Deploy targetter009.com
+name: Build Theater Web Portal
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
+  push:
+    paths:
+      - 'documents/**'
+      - 'assets/**'
+      - 'scripts/built.py'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      - name: Run built.py to generate index.html
-        run: python scripts/built.py
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Commit and Push generated index.html
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Automated: Project film to index.html via built.py"
-          file_pattern: "index.html"
-          git_action_options: '--no-verify'
-          push_options: '--force-with-lease'
+      - name: Run Built Script
+        run: |
+          python scripts/built.py
+
+      - name: Commit generated index.html
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html .trash/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Project cinema portal via built.py"
+          git push
