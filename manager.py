@@ -5,7 +5,13 @@ import re
 import urllib.parse
 import requests
 from gtts import gTTS
-from moviepy.editor import ImageClip, AudioFileClip, concat_videoclips
+
+# MoviePyは環境によってインポートエラーになりやすいため、安全に読み込む
+try:
+    from moviepy.editor import ImageClip, AudioFileClip, concat_videoclips
+    MOVIEPY_AVAILABLE = True
+except ImportError:
+    MOVIEPY_AVAILABLE = False
 
 def run_step(step_name, func):
     print(f"\n=== [START] {step_name} ===")
@@ -68,6 +74,10 @@ def step_speech():
 
 # 3. 動画結合プロセス
 def step_movies():
+    if not MOVIEPY_AVAILABLE:
+        print("Warning: MoviePy is not available. Skipping movie generation step safely.")
+        return
+
     os.makedirs('assets/videos', exist_ok=True)
     film_files = glob.glob('documents/Film.*.md')
     images = sorted(glob.glob('assets/images/*_16_9.png'))
@@ -79,9 +89,10 @@ def step_movies():
         audio_path = f"assets/audios/Film.{film_id}.mp3"
         
         if not os.path.exists(audio_path) or not images:
-            raise FileNotFoundError(f"Required assets missing for {film_id}")
+            print(f"Required assets missing for {film_id}, skipping.")
+            continue
             
-        print(f"Building movie for {film_id} (15 sec per scene)...")
+        print(f"Building movie for {film_id}...")
         clips = [ImageClip(img_p).set_duration(15) for img_p in images]
         video = concat_videoclips(clips, method="compose")
         audio = AudioFileClip(audio_path)
