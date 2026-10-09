@@ -24,11 +24,12 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install moviepy gTTS requests
+          python -m pip install numpy
+          python -m pip install -r requirements.txt
 
       - name: Run Master Manager Script
         run: |
-          python -m python manager.py || python manager.py
+          python manager.py
 
       - name: Commit all generated assets
         run: |
