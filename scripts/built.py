@@ -19,6 +19,8 @@ date: "2026-10-08"
 pattern: "A"
 script_type: "Dialogue"
 film_id: "{film_id}"
+audio_file: "assets/audios/Film.{film_id}.A.mp3"
+video_file: "assets/videos/Film.{film_id}.A.mp4"
 ---
 
 {content}
@@ -34,6 +36,8 @@ date: "2026-10-08"
 pattern: "B"
 script_type: "Voice Drama"
 film_id: "{film_id}"
+audio_file: "assets/audios/Film.{film_id}.B.mp3"
+video_file: "assets/videos/Film.{film_id}.B.mp4"
 cast:
   satoshi: "飲茶坊さとし（翁・語り手）"
   gemini: "Gemini-AI（映写補助）"
@@ -67,17 +71,16 @@ def parse_film_markdown(file_path):
 
     filename = os.path.basename(file_path)
     
-    film_id_match = re.search(r'20\d{2}\.\d{2}\.\d{2}\.[AP]M', filename)
-    film_id = film_id_match.group(0) if film_id_match else "2026.10.08.AM"
-
-    video_path = f"assets/videos/Film.{film_id}.mp4"
-    audio_path = f"assets/audios/Film.{film_id}.mp3"
+    # メタデータから動画・音声のパスを取得（なければデフォルト生成）
+    video_path = metadata.get('video_file')
+    audio_path = metadata.get('audio_file')
     
-    has_video = os.path.exists(video_path)
-    has_audio = os.path.exists(audio_path)
+    # フォールバック（ファイルが実際に存在するか確認）
+    has_video = video_path and os.path.exists(video_path)
+    has_audio = audio_path and os.path.exists(audio_path)
+    
     images = sorted(glob.glob('assets/images/*_16_9.png'))
 
-    # 修正箇所：括弧の対応を正しく修正
     lines = [l.strip() for l in body.split('\n') if l.strip() and not l.startswith('#') and not l.startswith('---')]
     preview = lines[0][:90] + "..." if lines else "対話ログが含まれています。"
 
