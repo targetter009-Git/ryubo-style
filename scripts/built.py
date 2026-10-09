@@ -4,10 +4,6 @@ import re
 import html
 
 def process_readme_to_films():
-    """
-    README.*.md（または既存の対話原稿）を読み込み、
-    パターンA（対話録）とパターンB（戯曲ドラマ）の2つの Film.*.md へ自動昇華・生成する
-    """
     source_files = glob.glob('documents/README.20*.md') + glob.glob('documents/Film.20*.md') + glob.glob('README.20*.md')
     
     for src in source_files:
@@ -17,7 +13,6 @@ def process_readme_to_films():
         date_match = re.search(r'20\d{2}\.\d{2}\.\d{2}\.[AP]M', src)
         film_id = date_match.group(0) if date_match else "2026.10.08.AM"
         
-        # --- パターンA (対話録フィルム) の自動生成 ---
         film_a_content = f"""---
 title: "指向哲学（Oriented-Philosophia）対話録 [{film_id}]"
 date: "2026-10-08"
@@ -31,7 +26,6 @@ film_id: "{film_id}"
         with open(f'documents/Film.{film_id}.A.md', 'w', encoding='utf-8') as f:
             f.write(film_a_content)
 
-        # --- パターンB (戯曲・ボイスドラマフィルム) の自動再構成生成 ---
         script_body = content.replace("飲茶坊さとし:", "\n**【さとし（翁）】**\n> ").replace("Gemini:", "\n**【Gemini（光の知性）】**\n> ")
         
         film_b_content = f"""---
@@ -56,7 +50,6 @@ cast:
             f.write(film_b_content)
 
 def parse_film_markdown(file_path):
-    """生成された Film.*.md のメタデータと本文を解析し、メディアファイルの存在もチェック"""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
@@ -74,21 +67,18 @@ def parse_film_markdown(file_path):
 
     filename = os.path.basename(file_path)
     
-    # フィルムID（例: 2026.10.09.AM）の特定
     film_id_match = re.search(r'20\d{2}\.\d{2}\.\d{2}\.[AP]M', filename)
     film_id = film_id_match.group(0) if film_id_match else "2026.10.08.AM"
 
-    # メディアファイルのパス確認
     video_path = f"assets/videos/Film.{film_id}.mp4"
     audio_path = f"assets/audios/Film.{film_id}.mp3"
     
     has_video = os.path.exists(video_path)
     has_audio = os.path.exists(audio_path)
-    
-    # 絵コンテ画像の取得
     images = sorted(glob.glob('assets/images/*_16_9.png'))
 
-    lines = [l.strip() for l in body.split('\n'] if l.strip() and not l.startswith('#') and not l.startswith('---')]
+    # 修正箇所：括弧の対応を正しく修正
+    lines = [l.strip() for l in body.split('\n') if l.strip() and not l.startswith('#') and not l.startswith('---')]
     preview = lines[0][:90] + "..." if lines else "対話ログが含まれています。"
 
     return {
@@ -102,7 +92,7 @@ def parse_film_markdown(file_path):
         'body_html': html.escape(body).replace('\n', '<br>'),
         'video_url': video_path if has_video else None,
         'audio_url': audio_path if has_audio else None,
-        'images': images[:4]  # 上映用に最初の数枚の絵コンテを表示
+        'images': images[:4]
     }
 
 def generate_html(films):
@@ -129,7 +119,6 @@ def generate_html(films):
         </div>
         """
 
-        # メディアプレイヤー（動画・音声・絵コンテ）のHTML構築
         media_section = ""
         if film['video_url']:
             media_section += f"""
@@ -152,7 +141,6 @@ def generate_html(films):
             </div>
             """
 
-        # 絵コンテギャラリーの構築
         gallery_section = ""
         if film['images']:
             imgs_html = "".join([f'<img src="{img}" alt="Storyboard" style="width: 120px; border-radius: 4px; border: 1px solid #334155;">' for img in film['images']])
