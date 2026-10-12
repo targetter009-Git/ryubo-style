@@ -71,14 +71,11 @@ def parse_film_markdown(file_path):
 
     filename = os.path.basename(file_path)
     
-    # メタデータから動画・音声のパスを取得（なければデフォルト生成）
     video_path = metadata.get('video_file')
     audio_path = metadata.get('audio_file')
     
-    # フォールバック（ファイルが実際に存在するか確認）
     has_video = video_path and os.path.exists(video_path)
     has_audio = audio_path and os.path.exists(audio_path)
-    
     images = sorted(glob.glob('assets/images/*_16_9.png'))
 
     lines = [l.strip() for l in body.split('\n') if l.strip() and not l.startswith('#') and not l.startswith('---')]
@@ -217,6 +214,18 @@ def generate_html(films):
         .media-container, .storyboard-container, .script-section {{ margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #1e293b; }}
         .media-label {{ font-size: 0.85rem; color: var(--gold); font-family: sans-serif; font-weight: bold; margin-bottom: 0.5rem; text-transform: uppercase; }}
         .script-body {{ background: #05080f; padding: 1rem; border-radius: 8px; border: 1px solid #1e293b; color: #cbd5e1; font-size: 0.95rem; max-height: 300px; overflow-y: auto; }}
+        
+        /* お問い合わせフォームのスタイル */
+        .contact-section {{ max-width: 1000px; margin: 4rem auto; padding: 2.5rem; background: #0d131f; border: 1px solid #334155; border-radius: 16px; font-family: sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+        .contact-title {{ color: var(--gold); font-size: 1.3rem; margin-bottom: 0.5rem; font-family: "Georgia", "YuMincho", serif; }}
+        .contact-desc {{ color: var(--text-sub); font-size: 0.9rem; margin-bottom: 1.5rem; }}
+        .form-group {{ margin-bottom: 1.2rem; display: flex; flex-direction: column; }}
+        .form-group label {{ font-size: 0.85rem; color: var(--text-sub); margin-bottom: 0.4rem; }}
+        .form-group input, .form-group textarea {{ background: #05080f; border: 1px solid #1e293b; border-radius: 8px; padding: 0.8rem; color: var(--text-main); font-size: 0.95rem; }}
+        .form-group input:focus, .form-group textarea:focus {{ outline: none; border-color: var(--gold); }}
+        .submit-btn {{ background: rgba(245, 158, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 0.9rem; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }}
+        .submit-btn:hover {{ background: var(--gold); color: #000; }}
+
         footer {{ text-align: center; padding: 3rem; color: #475569; font-family: sans-serif; font-size: 0.85rem; }}
     </style>
 </head>
@@ -228,6 +237,34 @@ def generate_html(films):
     <main class="gallery">
         {cards_html}
     </main>
+
+    <!-- お問い合わせセクション（宛先：ryubostyle@gmail.com） -->
+    <section class="contact-section">
+        <h3 class="contact-title">✉️ お問い合わせ・メッセージ</h3>
+        <p class="contact-desc">指向哲学ポータルへのご感想やご連絡はこちらからどうぞ。</p>
+        <form action="https://formsubmit.co/ryubostyle@gmail.com" method="POST" class="contact-form">
+            <input type="hidden" name="_subject" value="【指向哲学シアター】新しいメッセージが届きました">
+            <input type="hidden" name="_captcha" value="false">
+
+            <div class="form-group">
+                <label for="name">お名前</label>
+                <input type="text" id="name" name="name" required placeholder="お名前 または ニックネーム">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" name="email" required placeholder="your_email@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">メッセージ</label>
+                <textarea id="message" name="message" rows="4" required placeholder="メッセージをご記入ください..."></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">メッセージを送信する</button>
+        </form>
+    </section>
+
     {modals_html}
     <footer>
         <p>&copy; 2026 RyuboStyle — Projected by built.py</p>
