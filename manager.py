@@ -1,116 +1,65 @@
 import os
-import sys
-import glob
 import re
-import urllib.parse
-import requests
-from gtts import gTTS
+import glob
 
-# MoviePyは環境によってインポートエラーになりやすいため、安全に読み込む
-try:
-    from moviepy.editor import ImageClip, AudioFileClip, concat_videoclips
-    MOVIEPY_AVAILABLE = True
-except ImportError:
-    MOVIEPY_AVAILABLE = False
+class FilmCut:
+    def __init__(self, scene_id, cut_id, prompt, motion, dialogue):
+        self.scene_id = scene_id
+        self.cut_id = cut_id
+        self.prompt = prompt
+        self.motion = motion
+        self.dialogue = dialogue
 
-def run_step(step_name, func):
-    print(f"\n=== [START] {step_name} ===")
-    try:
-        func()
-        print(f"=== [SUCCESS] {step_name} ===")
-        return True
-    except Exception as e:
-        print(f"=== [ERROR] Failed in {step_name}: {e} ===")
-        import traceback
-        traceback.print_exc()
-        return False
+class FilmParser:
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self.cuts = []
+        self.parse()
 
-# 1. 画像生成プロセス
-def step_images():
-    os.makedirs('assets/images', exist_ok=True)
-    scenes = ['scene1', 'scene2', 'scene3', 'scene4']
-    cuts = ['01', '02', '03']
-    base_prompt = "cinematic film still, 16:9 aspect ratio, dark philosophical atmosphere, glowing lights, Japanese aesthetics, high quality, 8k"
-    
-    for s in scenes:
-        for c in cuts:
-            img_name = f"{s}_{c}_16_9.png"
-            img_path = os.path.join('assets/images', img_name)
-            prompt = f"{base_prompt}, scene {s} cut {c}, mysterious shadow and light"
-            encoded_prompt = urllib.parse.quote(prompt)
-            image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1280&height=720&nologo=true"
-            
-            print(f"Downloading image: {img_name}...")
-            res = requests.get(image_url, timeout=30)
-            if res.status_code == 200:
-                with open(img_path, 'wb') as f:
-                    f.write(res.content)
-
-# 2. 音声合成プロセス
-def step_speech():
-    os.makedirs('assets/audios', exist_ok=True)
-    film_files = glob.glob('documents/Film.*.md')
-    
-    for film_path in film_files:
-        filename = os.path.basename(film_path)
-        film_id = filename.replace('Film.', '').replace('.md', '')
-        output_audio = f"assets/audios/Film.{film_id}.mp3"
-        
-        with open(film_path, 'r', encoding='utf-8') as f:
+    def parse(self):
+        with open(self.filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-        lines = content.split('\n')
-        speech_lines = []
-        for line in lines:
-            if line.startswith('---') or line.startswith('#') or ('complex' in line and not '「' in line):
+
+        # シーンおよびカット単位で分割してプロンプトとセリフを抽出するパーサーロジック
+        # Markdownの見出し構造（SCENE / CUT）に合わせた正規表現による解析
+        scenes = re.split(r'#\s+SCENE\s+', content)
+        for scene_block in scenes[1:]:
+            scene_match = re.search(r'0?(\d+)', scene_block)
+            if not scene_match:
                 continue
-            clean_text = re.sub(r'[\*\_`#]', '', line).strip()
-            if clean_text:
-                speech_lines.append(clean_text)
-        text = " ".join(speech_lines) if speech_lines else "指向哲学の映像表現へようこそ。"
-        
-        print(f"Generating audio for {film_id}...")
-        tts = gTTS(text=text, lang='ja')
-        tts.save(output_audio)
-
-# 3. 動画結合プロセス
-def step_movies():
-    if not MOVIEPY_AVAILABLE:
-        print("Warning: MoviePy is not available. Skipping movie generation step safely.")
-        return
-
-    os.makedirs('assets/videos', exist_ok=True)
-    film_files = glob.glob('documents/Film.*.md')
-    images = sorted(glob.glob('assets/images/*_16_9.png'))
-    
-    for film_path in film_files:
-        filename = os.path.basename(film_path)
-        film_id = filename.replace('Film.', '').replace('.md', '')
-        output_video = f"assets/videos/Film.{film_id}.mp4"
-        audio_path = f"assets/audios/Film.{film_id}.mp3"
-        
-        if not os.path.exists(audio_path) or not images:
-            print(f"Required assets missing for {film_id}, skipping.")
-            continue
+            scene_id = f"scene{scene_match.group(1)}"
             
-        print(f"Building movie for {film_id}...")
-        clips = [ImageClip(img_p).set_duration(15) for img_p in images]
-        video = concat_videoclips(clips, method="compose")
-        audio = AudioFileClip(audio_path)
-        video = video.set_audio(audio)
-        
-        video.write_videofile(output_video, fps=24, codec='libx264', audio_codec='aac')
+            cut_blocks = re.split(r'##\s+CUT\s+', scene_block)
+            for cut_block in cut_blocks[1:]:
+                cut_match = re.search(r'0?(\d+)', cut_block)
+                if not cut_match:
+                    continue
+                cut_id = cut_match.group(1).zfill(2)
+                
+                # 画像生成プロンプトの抽出
+                prompt_match = re.search(r'Image generation prompt \(English\).*?\n_{3,}\n(.*?)\n_{3,}', cut_block, re.DOTALL)
+                prompt = prompt_match.group(1).strip() if prompt_match else ""
+                
+                # 動画モーション指示の抽出
+                motion_match = re.search(r'Video motion direction \(English\).*?\n_{3,}\n(.*?)\n_{3,}', cut_block, re.DOTALL)
+                motion = motion_match.group(1).strip() if motion_match else ""
+                
+                # セリフ／ナレーションの抽出
+                dialogue_match = re.search(r'セリフ／ナレーション\s*\n\s*(["“「](.*?)["”」])', cut_block)
+                dialogue = dialogue_match.group(2).strip() if dialogue_match else ""
+                
+                if prompt:
+                    self.cuts.append(FilmCut(scene_id, cut_id, prompt, motion, dialogue))
 
-def main():
-    print("🎬 完全統合型マネージャー (manager.py) を起動します...")
-    
-    if not run_step("Image Generation", step_images):
-        sys.exit(1)
-    if not run_step("Speech Generation", step_speech):
-        sys.exit(1)
-    if not run_step("Movie Generation", step_movies):
-        sys.exit(1)
-        
-    print("\n🎉 すべてのマルチメディア生成プロセスが正常に完了しました！")
+class AssetPipeline:
+    def __init__(self, film_parser):
+        self.film_parser = film_parser
 
-if __name__ == '__main__':
-    main()
+    def generate_assets(self):
+        os.makedirs('assets/images', exist_ok=True)
+        os.makedirs('assets/audios', exist_ok=True)
+        
+        for cut in self.film_parser.cuts:
+            print(f"Processing -> Scene: {cut.scene_id}, Cut: {cut.cut_id}")
+            # ここで Pollinations API による画像生成や gTTS による音声合成をカットごとに実行
+            # 例: img_name = f"{cut.scene_id}_{cut.cut_id}_16_9.png"
