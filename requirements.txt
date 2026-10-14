@@ -1,4 +1,0 @@
-gtts
-requests
-Pillow
-moviepy
