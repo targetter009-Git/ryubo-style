@@ -13,8 +13,6 @@ import yaml
 # procedures/ フォルダをインポートパスに追加
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from procedures import procedure1, procedure2, procedure3, procedure4
-
 # 🎬 監督が保持する「理想のリポジトリ・ツリー構造」のYAML定義
 REPOSITORY_BLUEPRINT = """
 project_name: "ryubo-style"
@@ -56,19 +54,19 @@ def direct():
     print(f"🎯 対象プロジェクト: {blueprint['project_name']}")
     
     try:
-        # 第一幕：フィルムの特定とクリーンアップ（現場からの報告を待ち受ける）
+        # この後 procedures/ フォルダや子モジュールを呼び出していくため、
+        # まっさらな状態の現段階では、まずはモジュール群のインポートテストが行われます。
+        from procedures import procedure1, procedure2, procedure3, procedure4
+
         print("\n--- [第一幕: Procedure 1 実行] ---")
         latest_film = procedure1.run()
         
-        # 第二幕：プロジェクターによる構造解析と実体化
         print("\n--- [第二幕: Procedure 2 実行] ---")
         build_data = procedure2.run(latest_film)
         
-        # 第三幕：スクリーン（index.html）のビルド
         print("\n--- [第三幕: Procedure 3 実行] ---")
         index_file = procedure3.run(build_data)
         
-        # 第四幕：最終確認とクランクアップ
         print("\n--- [第四幕: Procedure 4 実行] ---")
         procedure4.run()
         
@@ -77,7 +75,6 @@ def direct():
         print("="*50)
         
     except Exception as e:
-        # 🚨 各プロシージャから返されたエラーや不整合を監督がキャッチし、裁定を下す
         print("\n" + "="*50)
         print("🚨 [Manager 裁定] 撮影現場から不整合・エラーの報告を受け取りました。")
         print(f"⚠️ 現場からの報告内容: {e}")
