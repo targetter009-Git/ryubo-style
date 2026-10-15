@@ -3,7 +3,7 @@ import sys
 import yaml
 
 # ==========================================
-# 🎥 Ryubo Theater 舞台監督システム (Manager)
+# 🎥 Ryubo Theater 舞台監督システム (Manager - Simple)
 # ==========================================
 
 def load_blueprint():
@@ -15,29 +15,57 @@ def load_blueprint():
     return {}
 
 def create_default_file(file_path):
-    """各種プロシージャ、ベースクラス、および各部屋のREADME（スキーマ定義）のテンプレート"""
+    """ファイルの初期コンテンツを生成する"""
     base_name = os.path.basename(file_path)
-    parent_dir = os.path.dirname(file_path)
-    content = ""
     
     if base_name == "README.md":
-        if "documents" in parent_dir:
-            content = """# 📜 documents/ フィルム（台本）控室の仕様書
+        content = f"# {os.path.dirname(file_path)}\n\nこの空間は Ryubo Theater のシステムによって管理されています。\n"
+    elif base_name == "__init__.py":
+        content = "# Procedure Package Init\n"
+    elif base_name == "base.py":
+        content = 'class BaseProcedure:\n    """各専門プロシージャのベースクラス"""\n    def run(self):\n        raise NotImplementedError\n'
+    else:
+        content = f"# {base_name}\n"
 
-このディレクトリには、上映するフィルム（Markdown台本）を保管します。
+    if not os.path.exists(file_path):
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
 
-## フィルム命名規則
-- 形式: `Film.YYYY.MM.DD.[AM/PM].md`
-- 例: `Film.2026.10.15.AM.md`
+def self_repair(blueprint_data):
+    """設計図に基づきディレクトリとファイルを構築する"""
+    print("🛠️ [Manager 自律修復] 舞台セットを点検します...")
+    
+    for item in blueprint_data.get("required_tree", []):
+        path = item["path"]
+        
+        if item["type"] == "directory":
+            os.makedirs(path, exist_ok=True)
+            
+            # ファイル生成
+            for file_name in item.get("files", []):
+                file_path = os.path.join(path, file_name)
+                create_default_file(file_path)
+                    
+            # サブディレクトリ生成
+            for sub in item.get("sub_dirs", []):
+                sub_path = sub["path"]
+                os.makedirs(sub_path, exist_ok=True)
+                if sub.get("readme", False):
+                    create_default_file(os.path.join(sub_path, "README.md"))
+                    
+        elif item["type"] == "file" and path == "index.html":
+            if not os.path.exists(path):
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Ryubo Theater</title></head><body><h1>Ryubo Theater</h1></body></html>")
 
-## 台本スキーマ構造
-```yaml
-scenario:
-  title: "フィルムのタイトル"
-  protagonist: "主人公・視点"
-  acts:
-    - act: 1
-      title: "第一幕のタイトル"
-      dialogue:
-        - speaker: "話者名"
-          line: "セリフやト書き"
+def main():
+    print("🎭 Ryubo Theater Manager 起動...")
+    blueprint = load_blueprint()
+    if blueprint:
+        self_repair(blueprint)
+        print("🎬 舞台の点検・修復が完了しました。")
+    else:
+        print("⚠️ 警告: theater_blueprint.yaml が見つかりません。")
+
+if __name__ == "__main__":
+    main()
