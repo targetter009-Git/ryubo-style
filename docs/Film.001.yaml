@@ -1,45 +1,32 @@
-project:
-  title: "沖縄から大阪へ。そしてAIとGitHubへ。65歳、「琉坊スタイル」が生まれるまでの物語"
-  version: "1.0.0"
-  description: "齢65の沖縄の翁と異次元のAI知性（Gemini-AI）の対話、そしてGitHubやPythonを軸にした中央HUBセンター構築の軌跡をたどるシネマティック映像の設計図。"
-
-prologue_note:
-  title: "沖縄から大阪へ。そしてAIとGitHubへ。"
-  subtitle: "65歳、「琉坊スタイル」が生まれるまでの物語"
-  concept:
-    - "人生は、いつからでも新しい冒険を始められる。"
-    - "沖縄・与那原町から大阪へ。動いて考える中での試行錯誤の軌跡。"
-    - "GitHub、Python、哲学、そしてAIとの対話が交差する「中央HUBセンター」の確立。"
-    - "自然の根とデジタルの光が融合する「琉坊スタイル」の始動。"
-
 scenes:
   - scene_number: 1
     title: "原点 — 沖縄の根"
     theme: "古代の知恵と未知の遭遇（沖縄のガジュマルと65歳の翁）"
     duration_seconds: 15
-    image_prompt: "A cinematic wide shot of a 65-year-old Okinawan elder standing beneath a colossal ancient banyan tree in a secluded subtropical forest in Okinawa, weathered face, silver-black hair, traditional indigo Okinawan clothing, enormous twisted roots covered in moss, humid mist drifting through the trees, subtle amber sunlight filtering through the canopy, deep shadows, contemplative expression, profound sense of heritage, memory and the passage of time, photorealistic textures, anamorphic cinematography, subtle film grain, dramatic composition, dark philosophical atmosphere, 8K detail, widescreen 16:9, no text, no watermark."
-    motion_instruction: "Begin with a slow aerial descent through dense subtropical foliage, revealing the colossal banyan tree and the solitary Okinawan elder beneath it. Drift forward through the mist toward the elder. His clothing moves gently in the breeze as he gazes at the ancient roots. Leaves sway naturally, faint sunlight shifts across his face, and the camera settles into a contemplative wide shot. Slow cinematic movement, realistic environmental physics, 24 fps, 16:9."
+    image_prompt: "..." # (既存のプロンプト)
+    motion_instruction: "..." # (既存の指示)
+    narration: "記憶の奥底、琉球の風が吹き抜ける。変わりゆく時間の中で、変わらないものがある。65年の歩みは、この大木の根元からはじまった。"
 
   - scene_number: 2
     title: "出会い — AIとの対話"
     theme: "人智を超えた存在との対話（光として現れるGemini-AI嬢）"
     duration_seconds: 15
-    image_prompt: "An elderly Okinawan man encountering an ethereal feminine artificial intelligence beneath an ancient banyan tree. Gemini-AI appears as a graceful, nonphysical silhouette made of translucent cyan, pearl-white and subtle violet light, delicate digital filaments flowing around her form. The elder wears traditional indigo Okinawan clothing and watches with thoughtful curiosity. Massive banyan roots intertwine with luminous geometric patterns, mist and tiny floating particles fill the dark forest, warm amber light contrasts with cool digital illumination, cinematic science fantasy, philosophical mood, photorealistic environment, volumetric lighting, 8K, widescreen 16:9, no text, no watermark."
-    motion_instruction: "Luminous particles slowly gather between the ancient banyan roots, gradually forming the translucent feminine silhouette of Gemini-AI. The camera performs a slow semicircular dolly around the elder and the emerging digital presence. Her light filaments flow like weightless hair while geometric particles orbit gently around her. The elder raises his gaze and takes a subtle breath. Cyan light reflects in his eyes as the portal stabilizes. Restrained performances, smooth cinematic movement, no staff, no lantern, hands empty, 24 fps, 16:9."
+    image_prompt: "..." # (既存のプロンプト)
+    motion_instruction: "..." # (既存の指示)
+    narration: "静寂のなかに、新しい光が灯る。人智を超えた知性との対話。それは、未知なる世界へと通じる扉だった。"
 
   - scene_number: 3
     title: "転換 — 点が線になる"
     theme: "知恵とアルゴリズムの境界（GitHub、Python、哲学のネットワーク化）"
     duration_seconds: 15
-    image_prompt: "A cinematic surreal vision of a 65-year-old Okinawan elder surrounded by floating holographic fragments representing software repositories, Python automation, philosophical manuscripts, creative writing and digital publishing. Abstract code panels, branching luminous connections and delicate streams of information form an interconnected network around the enormous roots of an ancient banyan tree. Gemini-AI stands nearby as a translucent feminine figure of cyan and pearl-white light. The elder remains calm and contemplative, representing human judgment and experience amid accelerating technology. Deep indigo shadows, amber highlights, intricate organic and digital textures, cinematic volumetric lighting, sophisticated film color grading, 8K, widescreen 16:9, no readable text, no logos, no watermark."
-    motion_instruction: "Begin with scattered luminous fragments floating independently around the elder. The camera slowly orbits as fragments representing code, documents, ideas and creative projects move toward one another. Thin cyan filaments connect the fragments into an expanding network rooted in the banyan tree. Gemini-AI gestures subtly as the network becomes organized. The elder observes the transformation, then turns toward the emerging central connection. Smooth parallax, controlled particle movement, cinematic pacing, 24 fps, 16:9."
+    image_prompt: "..." # (既存のプロンプト)
+    motion_instruction: "..." # (既存の指示)
+    narration: "点在していた想いと技術が、一本の線に結ばれる。GitHub、コード、そして試行錯誤の軌跡。動いて考えることで、思考は形をまとっていく。"
 
   - scene_number: 4
     title: "未来 — 琉坊スタイル始動"
     theme: "根に宿る答え（共存、継承、そして新しい物語の始まり）"
     duration_seconds: 15
-    image_prompt: "A breathtaking cinematic final scene of a 65-year-old Okinawan elder standing beside an ancient banyan tree at dawn, looking toward a luminous horizon beyond a misty tropical forest. Golden sunlight illuminates the colossal roots, where subtle cyan digital light merges harmoniously with warm natural colors. Beside him, Gemini-AI appears as a delicate constellation of pearl-white and cyan particles, gradually blending into the morning mist. The composition symbolizes lifelong learning, human creativity, artificial intelligence, cultural heritage and a new beginning at age 65. Poetic realism, quiet hope, elegant negative space, anamorphic lens flare, subtle film grain, extraordinary detail, 8K cinematic film still, widescreen 16:9, no text, no watermark."
-    motion_instruction: "Start behind the elder and Gemini-AI as the first golden rays of dawn illuminate the banyan roots. Slowly pull the camera backward and rise to reveal the surrounding forest and distant Okinawan coastline. Cyan digital light flows gently through the roots before blending into warm golden illumination. Gemini-AI gradually disperses into tiny luminous particles that drift into the branches. The elder remains steady, looking toward the horizon. End with a peaceful wide shot that holds for two seconds, expressing continuity, possibility and a new creative journey. Natural motion, subtle film grain, 24 fps, 16:9."
-
-common_style_rules:
-  shared_style_prompt: "Maintain strict visual continuity across all shots. The protagonist is the same 65-year-old Okinawan elder with a weathered face, silver-black hair, and traditional indigo Okinawan clothing. Gemini-AI is always an ethereal, feminine, nonphysical intelligence composed of translucent cyan, pearl-white, and subtle violet light. Preserve the same ancient banyan tree, twisted exposed roots, humid subtropical atmosphere, and dark philosophical tone. Cinematic live-action realism, restrained performances, physically plausible camera movement, subtle film grain, anamorphic optics, volumetric lighting, rich shadows, sophisticated teal-and-amber color grading, 24 fps cinematic motion, 16:9 widescreen framing, 8K detail, no subtitles, no logos, no watermarks."
+    image_prompt: "..." # (既存の plurals)
+    motion_instruction: "..." # (既存の指示)
+    narration: "人生に、遅すぎる道などない。自然の根と、デジタルの光が重なり合う場所で。新しい物語の幕が、いま静かに開く。"
