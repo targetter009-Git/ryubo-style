@@ -5,7 +5,7 @@ scenes:
     duration_seconds: 15
     image_prompt: "..." # (既存のプロンプト)
     motion_instruction: "..." # (既存の指示)
-    narration: "記憶の奥底、琉球の風が吹き抜ける。変わりゆく時間の中で、変わらないものがある。65年の歩みは、この大木の根元からはじまった。"
+    narration: "記憶の奥底…琉球の風が吹き抜ける……変わりゆく時間の中で変わらないものがある。65年の歩みは…この大木の根元からはじまった…"
 
   - scene_number: 2
     title: "出会い — AIとの対話"
